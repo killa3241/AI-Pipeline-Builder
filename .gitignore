@@ -1,0 +1,58 @@
+# ============================================================
+# AI Pipeline Builder — monorepo (React + FastAPI)
+# ============================================================
+
+# --- Secrets / env files ---
+.env
+.env.*
+!.env.example
+
+# --- Node / React ---
+**/node_modules/
+**/.pnp
+**/.pnp.js
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+**/lerna-debug.log*
+
+# Build outputs
+**/build/
+**/dist/
+**/out/
+
+# Coverage
+**/coverage/
+
+# --- Python / FastAPI ---
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+
+# Virtual environments
+**/.venv/
+**/venv/
+**/ENV/
+**/.envrc
+
+# Tooling caches
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+**/.coverage
+**/htmlcov/
+
+# --- OS-specific ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# --- IDE / Editor ---
+.idea/
+.vscode/
+*.iml
+
+# --- Logs ---
+*.log
+

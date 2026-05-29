@@ -1,0 +1,6 @@
+/* Kept intentionally minimal.
+   Global app styling lives in `src/styles/theme.css` and `src/styles/app.css`. */
+
+code {
+  font-family: var(--font-mono);
+}
