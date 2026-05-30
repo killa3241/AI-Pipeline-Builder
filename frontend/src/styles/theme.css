@@ -1,3 +1,8 @@
+/**
+ * Design tokens — single source of truth for light/dark themes.
+ * Semantic names are preferred in app.css; legacy aliases remain for compatibility.
+ */
+
 :root,
 [data-theme='dark'] {
   color-scheme: dark;
@@ -23,74 +28,178 @@
   --radius-lg: 16px;
   --radius-xl: 20px;
 
-  /* Borders */
-  --border-1: 1px solid rgba(255, 255, 255, 0.10);
-  --border-2: 1px solid rgba(255, 255, 255, 0.16);
-
-  /* Shadows */
-  --shadow-sm: 0 1px 0 rgba(0, 0, 0, 0.35), 0 8px 24px rgba(0, 0, 0, 0.25);
-  --shadow-md: 0 1px 0 rgba(0, 0, 0, 0.35), 0 16px 48px rgba(0, 0, 0, 0.35);
-
   /* Motion */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --transition-fast: 120ms var(--ease-out);
   --transition-med: 180ms var(--ease-out);
 
-  /* Colors (dark, slate) */
-  --bg-0: #070A12;
-  --bg-1: #0B1020;
-  --bg-2: #0F1730;
-  --bg-3: rgba(255, 255, 255, 0.06);
+  /* Semantic colors — dark */
+  --bg-primary: #070a12;
+  --bg-secondary: #0b1020;
+  --surface-primary: #0b1020;
+  --surface-secondary: #0f1730;
+  --surface-elevated: #151d33;
 
-  --text-1: rgba(255, 255, 255, 0.92);
-  --text-2: rgba(255, 255, 255, 0.72);
-  --text-3: rgba(255, 255, 255, 0.55);
+  --text-primary: #eef2ff;
+  --text-secondary: #c7d2e8;
+  --text-muted: #8b9bb8;
 
-  --accent-1: #6D5EF6;
-  --accent-2: #22C55E;
-  --danger-1: #EF4444;
-  --warn-1: #F59E0B;
+  --border-color: #2a3550;
+  --border-primary: 1px solid var(--border-color);
+  --border-strong: 1px solid #3d4d6f;
 
-  --grid: rgba(255, 255, 255, 0.06);
-  --focus: rgba(109, 94, 246, 0.55);
+  --accent-primary: #6d5ef6;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --error: #ef4444;
+
+  --accent-muted-bg: color-mix(in srgb, var(--accent-primary) 18%, transparent);
+  --accent-muted-border: color-mix(in srgb, var(--accent-primary) 40%, transparent);
+  --success-muted-bg: color-mix(in srgb, var(--success) 14%, transparent);
+  --success-muted-border: color-mix(in srgb, var(--success) 38%, transparent);
+  --warning-muted-bg: color-mix(in srgb, var(--warning) 14%, transparent);
+  --warning-muted-border: color-mix(in srgb, var(--warning) 40%, transparent);
+  --error-muted-bg: color-mix(in srgb, var(--error) 14%, transparent);
+  --error-muted-border: color-mix(in srgb, var(--error) 40%, transparent);
+
+  --divider: color-mix(in srgb, var(--text-primary) 10%, transparent);
+  --control-bg: color-mix(in srgb, var(--text-primary) 6%, var(--surface-secondary));
+  --control-border: var(--border-color);
+  --control-bg-hover: color-mix(in srgb, var(--text-primary) 10%, var(--surface-secondary));
+  --control-focus-ring: color-mix(in srgb, var(--accent-primary) 35%, transparent);
+
+  --btn-secondary-bg: var(--control-bg);
+  --btn-secondary-hover: var(--control-bg-hover);
+  --btn-primary-bg: var(--accent-muted-bg);
+  --btn-primary-border: var(--accent-muted-border);
+
+  --shadow-sm: 0 1px 0 color-mix(in srgb, black 35%, transparent),
+    0 8px 24px color-mix(in srgb, black 28%, transparent);
+  --shadow-md: 0 1px 0 color-mix(in srgb, black 35%, transparent),
+    0 16px 48px color-mix(in srgb, black 32%, transparent);
+  --shadow-node: 0 10px 30px color-mix(in srgb, black 40%, transparent);
+
+  --grid: color-mix(in srgb, var(--text-primary) 8%, transparent);
+  --canvas-glow: color-mix(in srgb, var(--accent-primary) 22%, transparent);
+  --canvas-glow-2: color-mix(in srgb, var(--success) 10%, transparent);
+  --canvas-overlay: color-mix(in srgb, var(--text-primary) 2%, transparent);
+
+  --edge-default: color-mix(in srgb, var(--text-secondary) 55%, transparent);
+  --edge-hover: color-mix(in srgb, var(--text-secondary) 85%, transparent);
+  --edge-shadow: color-mix(in srgb, black 28%, transparent);
+  --edge-exec: color-mix(in srgb, var(--accent-primary) 95%, transparent);
+  --edge-exec-glow: color-mix(in srgb, var(--accent-primary) 45%, transparent);
+  --edge-success: color-mix(in srgb, var(--success) 78%, transparent);
+  --edge-error: color-mix(in srgb, var(--error) 88%, transparent);
+  --edge-error-glow: color-mix(in srgb, var(--error) 38%, transparent);
+
+  --rf-controls-bg: color-mix(in srgb, var(--surface-primary) 88%, transparent);
+  --rf-controls-hover: color-mix(in srgb, var(--text-primary) 8%, transparent);
   --minimap-node: #3d4a6b;
-  --minimap-mask: rgba(7, 10, 18, 0.75);
-  --canvas-glow: rgba(109, 94, 246, 0.22);
-  --canvas-glow-2: rgba(34, 197, 94, 0.10);
+  --minimap-mask: color-mix(in srgb, var(--bg-primary) 78%, transparent);
 
-  /* Node layout defaults */
+  --card-bg: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--text-primary) 7%, transparent),
+    color-mix(in srgb, var(--text-primary) 3%, transparent)
+  );
+  --card-border: var(--border-color);
+  --card-border-hover: color-mix(in srgb, var(--text-primary) 22%, transparent);
+  --card-bg-hover: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--text-primary) 10%, transparent),
+    color-mix(in srgb, var(--text-primary) 5%, transparent)
+  );
+
+  --icon-badge-bg: var(--accent-muted-bg);
+  --icon-badge-border: var(--accent-muted-border);
+  --icon-badge-text: var(--text-primary);
+
+  --brand-gradient: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent-primary) 95%, transparent),
+    color-mix(in srgb, var(--surface-secondary) 20%, transparent)
+  );
+  --brand-highlight: color-mix(in srgb, var(--text-primary) 35%, transparent);
+
+  --scrollbar-thumb: color-mix(in srgb, var(--text-muted) 55%, transparent);
+  --scrollbar-track: transparent;
+
+  --select-option-bg: var(--surface-secondary);
+  --select-option-text: var(--text-primary);
+
+  /* State: selection / execution / validation on nodes */
+  --state-select-border: color-mix(in srgb, var(--accent-primary) 65%, transparent);
+  --state-select-ring: color-mix(in srgb, var(--accent-primary) 24%, transparent);
+  --state-exec-border: color-mix(in srgb, var(--accent-primary) 88%, transparent);
+  --state-exec-ring: color-mix(in srgb, var(--accent-primary) 38%, transparent);
+  --state-exec-glow: color-mix(in srgb, var(--accent-primary) 38%, transparent);
+  --state-done-border: color-mix(in srgb, var(--success) 58%, transparent);
+  --state-done-ring: color-mix(in srgb, var(--success) 20%, transparent);
+  --state-warn-border: color-mix(in srgb, var(--warning) 58%, transparent);
+  --state-warn-ring: color-mix(in srgb, var(--warning) 18%, transparent);
+  --state-invalid-border: color-mix(in srgb, var(--warning) 58%, transparent);
+  --state-invalid-ring: color-mix(in srgb, var(--warning) 16%, transparent);
+
+  --handle-border: color-mix(in srgb, var(--text-primary) 28%, transparent);
+  --handle-bg: color-mix(in srgb, var(--text-primary) 14%, transparent);
+  --handle-shadow: color-mix(in srgb, black 28%, transparent);
+  --handle-hover-border: color-mix(in srgb, var(--text-primary) 42%, transparent);
+  --handle-hover-bg: color-mix(in srgb, var(--text-primary) 20%, transparent);
+
+  /* Node layout */
   --node-width: 240px;
   --node-min-height: 116px;
   --node-max-height: 360px;
+
+  /* Legacy aliases */
+  --bg-0: var(--bg-primary);
+  --bg-1: var(--surface-primary);
+  --bg-2: var(--surface-secondary);
+  --bg-3: var(--control-bg);
+  --text-1: var(--text-primary);
+  --text-2: var(--text-secondary);
+  --text-3: var(--text-muted);
+  --accent-1: var(--accent-primary);
+  --accent-2: var(--success);
+  --danger-1: var(--error);
+  --warn-1: var(--warning);
+  --border-1: var(--border-primary);
+  --border-2: var(--border-strong);
+  --focus: var(--control-focus-ring);
 }
 
 [data-theme='light'] {
   color-scheme: light;
 
-  --border-1: 1px solid rgba(15, 23, 42, 0.10);
-  --border-2: 1px solid rgba(15, 23, 42, 0.16);
+  --bg-primary: #f1f5f9;
+  --bg-secondary: #ffffff;
+  --surface-primary: #ffffff;
+  --surface-secondary: #f8fafc;
+  --surface-elevated: #eef2f7;
 
-  --shadow-sm: 0 1px 0 rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.08);
-  --shadow-md: 0 1px 0 rgba(15, 23, 42, 0.08), 0 16px 48px rgba(15, 23, 42, 0.10);
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
 
-  --bg-0: #F8FAFC;
-  --bg-1: #FFFFFF;
-  --bg-2: #F1F5F9;
-  --bg-3: rgba(15, 23, 42, 0.04);
+  --border-color: #cbd5e1;
+  --border-strong: 1px solid #94a3b8;
 
-  --text-1: rgba(15, 23, 42, 0.92);
-  --text-2: rgba(15, 23, 42, 0.68);
-  --text-3: rgba(15, 23, 42, 0.50);
+  --accent-primary: #5b4fe8;
+  --success: #16a34a;
+  --warning: #d97706;
+  --error: #dc2626;
 
-  --accent-1: #5B4FE8;
-  --accent-2: #16A34A;
-  --danger-1: #DC2626;
-  --warn-1: #D97706;
+  --shadow-sm: 0 1px 0 color-mix(in srgb, #0f172a 6%, transparent),
+    0 8px 24px color-mix(in srgb, #0f172a 8%, transparent);
+  --shadow-md: 0 1px 0 color-mix(in srgb, #0f172a 8%, transparent),
+    0 16px 48px color-mix(in srgb, #0f172a 10%, transparent);
+  --shadow-node: 0 10px 28px color-mix(in srgb, #0f172a 12%, transparent);
 
-  --grid: rgba(15, 23, 42, 0.08);
-  --focus: rgba(91, 79, 232, 0.45);
-  --minimap-node: #94A3B8;
-  --minimap-mask: rgba(248, 250, 252, 0.85);
-  --canvas-glow: rgba(91, 79, 232, 0.12);
-  --canvas-glow-2: rgba(22, 163, 74, 0.08);
+  --grid: color-mix(in srgb, #0f172a 10%, transparent);
+  --minimap-node: #64748b;
+  --minimap-mask: color-mix(in srgb, var(--bg-primary) 88%, transparent);
+
+  --edge-shadow: color-mix(in srgb, #0f172a 12%, transparent);
+  --rf-controls-bg: color-mix(in srgb, var(--surface-primary) 94%, transparent);
 }

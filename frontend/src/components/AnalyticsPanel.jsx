@@ -1,5 +1,4 @@
 import { useStore } from '../store';
-import { compareAnalytics } from '../graph/parity';
 import {
   formatExecutionOrder,
   getExecutionStatusLabel,
@@ -22,19 +21,46 @@ function MetricRow({ label, value, pill }) {
   );
 }
 
-function AnalyticsBlock({ title, data, showInvalidEdges }) {
+function FinalAnalysisBlock({ data, isLoading, error }) {
+  if (isLoading) {
+    return (
+      <div className="analyticsSection">
+        <div className="analyticsSectionTitle">Final Analysis</div>
+        <div className="analyticsHint">Analyzing pipeline...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="analyticsSection">
+        <div className="analyticsSectionTitle">Final Analysis</div>
+        <div className="analyticsError">
+          <div style={{ marginBottom: '8px' }}>✗ Analysis Failed</div>
+          <div style={{ fontSize: '12px', marginTop: '4px' }}>{error}</div>
+        </div>
+      </div>
+    );
+  }
+
   if (!data) {
     return (
       <div className="analyticsSection">
-        <div className="analyticsSectionTitle">{title}</div>
-        <div className="analyticsHint">Not available</div>
+        <div className="analyticsSectionTitle">Final Analysis</div>
+        <div className="analyticsHint">No analysis available.</div>
+        <div className="analyticsHint" style={{ marginTop: '8px', fontSize: '11px' }}>
+          Click Analyze Pipeline to generate workflow insights.
+        </div>
       </div>
     );
   }
 
   return (
     <div className="analyticsSection">
-      <div className="analyticsSectionTitle">{title}</div>
+      <div className="analyticsSectionTitle">Final Analysis</div>
+      <div style={{ marginBottom: '12px', color: 'var(--status-success)', fontWeight: 600 }}>
+        ✓ Pipeline Valid
+      </div>
       <MetricRow label="Nodes" value={data.numNodes ?? 0} />
       <MetricRow label="Edges" value={data.numEdges ?? 0} />
       <MetricRow
@@ -43,38 +69,22 @@ function AnalyticsBlock({ title, data, showInvalidEdges }) {
         pill={data.isDag}
       />
       <MetricRow
-        label="Cycle"
-        value={data.cycleDetected ? 'Detected' : 'None'}
+        label="Cycle Detected"
+        value={data.cycleDetected ? 'Yes' : 'No'}
         pill={!data.cycleDetected}
       />
-      <MetricRow label="Isolated" value={data.isolatedNodes ?? 0} />
-      <MetricRow label="Disconnected" value={data.disconnectedNodes ?? 0} />
-      {showInvalidEdges ? (
-        <>
-          <MetricRow label="Invalid edges" value={(data.invalidEdgeIds || []).length} />
-          {(data.invalidEdges || []).length > 0 && (
-            <ul className="analyticsWarnings analyticsInvalidEdgeList">
-              {data.invalidEdges.map((item, idx) => (
-                <li key={`${item.edgeId}-${idx}`}>
-                  <span className="inspectorMono">{item.edgeId}</span>: {item.reason}
-                </li>
-              ))}
-            </ul>
-          )}
-        </>
-      ) : null}
+      <MetricRow label="Isolated Nodes" value={data.isolatedNodes ?? 0} />
+      <MetricRow label="Disconnected Nodes" value={data.disconnectedNodes ?? 0} />
     </div>
   );
 }
 
 export function AnalyticsPanel() {
-  const analytics = useStore((state) => state.analytics);
-  const backendAnalytics = useStore((state) => state.backendAnalytics);
-  const backendError = useStore((state) => state.backendError);
   const execution = useStore((state) => state.execution);
   const executionSpeed = useStore((state) => state.executionSpeed);
   const executionWarning = useStore((state) => state.executionWarning);
   const nodes = useStore((state) => state.nodes);
+  const analytics = useStore((state) => state.analytics);
 
   const runExecution = useStore((state) => state.runExecution);
   const pauseExecution = useStore((state) => state.pauseExecution);
@@ -83,7 +93,10 @@ export function AnalyticsPanel() {
   const stepForward = useStore((state) => state.stepForward);
   const setExecutionSpeed = useStore((state) => state.setExecutionSpeed);
 
-  const parity = compareAnalytics(analytics, backendAnalytics);
+  const backendAnalytics = useStore((state) => state.backendAnalytics);
+  const backendError = useStore((state) => state.backendError);
+  const isSubmitting = useStore((state) => state.isSubmitting);
+
   const canRun = analytics?.isDag && (analytics?.numNodes ?? 0) > 0;
   const statusLabel = getExecutionStatusLabel(execution);
   const orderLabels = formatExecutionOrder(nodes, execution.executionOrder || []);
@@ -176,50 +189,11 @@ export function AnalyticsPanel() {
 
       <div className="analyticsDivider" />
 
-      <AnalyticsBlock title="Live (frontend)" data={analytics} showInvalidEdges />
-
-      {(analytics?.warnings || []).length > 0 && (
-        <>
-          <div className="analyticsDivider" />
-          <div className="analyticsWarningsTitle">Live warnings</div>
-          <ul className="analyticsWarnings">
-            {(analytics.warnings || []).map((w, idx) => (
-              <li key={idx}>{w}</li>
-            ))}
-          </ul>
-        </>
-      )}
-
-      <div className="analyticsDivider" />
-
-      <AnalyticsBlock title="Backend" data={backendAnalytics} />
-
-      {backendError ? <div className="analyticsError">{backendError}</div> : null}
-
-      {parity.match !== null && (
-        <>
-          <div className="analyticsDivider" />
-          <div className="analyticsRow">
-            <div className="analyticsLabel">Parity</div>
-            <div className={`analyticsPill ${parity.match ? 'pillOk' : 'pillBad'}`}>
-              {parity.match ? 'Match' : 'Mismatch'}
-            </div>
-          </div>
-          {!parity.match && parity.mismatches.length > 0 && (
-            <ul className="analyticsWarnings">
-              {parity.mismatches.map((m) => (
-                <li key={m.field}>
-                  {m.field}: frontend {String(m.frontend)} vs backend {String(m.backend)}
-                </li>
-              ))}
-            </ul>
-          )}
-        </>
-      )}
-
-      {!backendAnalytics && !backendError && (
-        <div className="analyticsHint">Analyze pipeline to compare with backend.</div>
-      )}
+      <FinalAnalysisBlock 
+        data={backendAnalytics} 
+        isLoading={isSubmitting}
+        error={backendError}
+      />
     </div>
   );
 }

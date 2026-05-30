@@ -1,120 +1,133 @@
 # AI Pipeline Builder
 
-A polished, portfolio-ready visual AI workflow editor inspired by Langflow, Flowise, and modern automation tools. Design pipelines as directed graphs, validate DAG structure live, preview execution visually, and persist workflows as JSON — without real AI execution or auth infrastructure.
+A polished, portfolio-ready visual AI workflow editor inspired by Langflow, Flowise, and modern automation platforms. Design pipelines as directed graphs, validate structure in real time, preview execution visually, and persist workflows locally — without authentication, databases, or real AI execution.
 
 ## Overview
 
-AI Pipeline Builder lets you:
+**AI Pipeline Builder** is a full-stack demonstration of a lightweight workflow product:
 
-- Drag nodes onto a canvas and connect them with edges
-- Configure node parameters and dynamic Text node variables (`{{name}}`)
-- Validate pipeline structure in real time (cycles, isolation, invalid edges)
-- Submit graphs to a FastAPI backend for DAG analytics
-- Preview execution order with animated node/edge highlights
-- Export/import workflows and load starter templates
-- Switch between light and dark themes
+- Drag-and-drop nodes on a ReactFlow canvas
+- Connect steps to define data flow and execution order
+- Configure nodes via inline fields and a Figma-style **Node Inspector**
+- Parse `{{variables}}` in Text nodes to generate dynamic handles
+- Validate DAG structure live and via a FastAPI backend
+- Simulate execution with animated node/edge highlights
+- Export/import workflows as JSON
+- Switch between **light** and **dark** themes
+
+This project was built as a technical assessment showcase, but the architecture is intentionally product-oriented: reusable nodes, centralized graph utilities, and a design system that scales beyond the demo scope.
+
+## Features
+
+| Area | Capabilities |
+|------|----------------|
+| **Node system** | Config-driven `BaseNode`, 9 node types, shared `NodeField` / `NodeHandle` |
+| **Dynamic variables** | Text templates with `{{name}}` → live `var-*` handles + edge sync |
+| **Live validation** | Cycles, isolated/disconnected nodes, invalid edges (with reasons) |
+| **Backend DAG** | `POST /pipelines/parse` — topology analytics with frontend parity |
+| **Execution preview** | Topological simulation, Run/Pause/Step/Reset, speed control |
+| **Persistence** | Export/import `workflow.json` (nodes, edges, positions, data) |
+| **Themes** | Light/dark via CSS variables, persisted in `localStorage` |
+| **Templates** | LLM pipeline, API flow, Math pipeline — one-click load |
+| **Node inspector** | Right panel switches to property editor when a node is selected |
+| **Shortcuts** | Delete, Ctrl+S export, Ctrl+A select all, F fit view |
 
 ## Architecture
 
 ```mermaid
 flowchart TB
-  subgraph frontend [Frontend - React]
-    UI[AppShell / Canvas / Sidebar]
-  RF[ReactFlow]
-  ZS[Zustand Store]
-  Graph[graph/* utilities]
-  UI --> RF
-  UI --> ZS
-  ZS --> Graph
+  subgraph client [Frontend]
+    UI[AppShell]
+    RF[ReactFlow Canvas]
+    ZS[Zustand Store]
+    Graph[graph/*]
+    UI --> RF
+    UI --> ZS
+    ZS --> Graph
   end
 
-  subgraph backend [Backend - FastAPI]
-    Routes[routes/pipeline.py]
-    Svc[services/graph_service.py]
+  subgraph server [Backend]
+    API[routes/pipeline.py]
+    SVC[services/graph_service.py]
     DAG[utils/dag.py]
-    Routes --> Svc --> DAG
+    API --> SVC --> DAG
   end
 
-  ZS -->|POST /pipelines/parse| Routes
+  ZS -->|POST /pipelines/parse| API
 ```
 
-### Frontend stack
+### Frontend
 
-| Layer | Technology |
-|-------|------------|
-| UI | React (CRA) |
-| Canvas | ReactFlow |
-| State | Zustand |
-| Styling | CSS variables (design tokens) |
+- **React** (Create React App)
+- **ReactFlow** — canvas, edges, minimap, controls
+- **Zustand** — graph state, analytics, execution preview, theme
 
-### Backend stack
+### Backend
 
-| Layer | Technology |
-|-------|------------|
-| API | FastAPI |
-| Validation | Pydantic |
-| Graph algorithms | DFS cycle detection, connectivity analysis |
+- **FastAPI** — modular routes, services, Pydantic models
+- **Graph algorithms** — DFS cycle detection, connectivity, topological ordering (frontend)
+
+### Core concepts
+
+1. **BaseNode architecture** — nodes are thin wrappers + JSON config (title, fields, handles).
+2. **Config-driven nodes** — new nodes mostly declare config, not bespoke JSX.
+3. **Deterministic handles** — stable IDs (`text-1-output`, `var-user`) for validation and import.
+4. **Graph analytics** — `graph/analytics.js` + `graph/validators.js` (node-level vs handle-level checks).
+5. **Execution preview** — `graph/executionPreview.js` simulates traversal without running APIs.
 
 ## Project structure
 
 ```
-.
+VectorShift/
 ├── frontend/
-│   ├── src/
-│   │   ├── components/       # AppShell, BaseNode, panels, header
-│   │   ├── nodes/            # Thin config-driven node wrappers
-│   │   ├── graph/            # analytics, validators, execution, persistence
-│   │   ├── api/              # backend client
-│   │   └── styles/           # theme.css, app.css
-│   └── package.json
-└── backend/
-    ├── main.py
-    ├── routes/pipeline.py
-    ├── services/graph_service.py
-    ├── models/pipeline_models.py
-    └── utils/dag.py
+│   └── src/
+│       ├── components/     # AppShell, BaseNode, panels, header
+│       ├── nodes/            # Node wrappers (config only)
+│       ├── graph/            # analytics, validators, execution, persistence
+│       ├── api/              # backend client
+│       ├── styles/           # theme.css (tokens), app.css (components)
+│       └── theme/            # initTheme + localStorage
+├── backend/
+│   ├── main.py
+│   ├── routes/pipeline.py
+│   ├── services/graph_service.py
+│   ├── models/pipeline_models.py
+│   └── utils/dag.py
+└── docs/screenshots/         # Add portfolio captures here
 ```
 
-## Features
+## Key features by phase
 
-### Node system
+| Phase | Deliverable |
+|-------|-------------|
+| **0** | Stabilized Zustand store, immutable updates, centralized node data |
+| **1** | AppShell layout, dark theme foundation |
+| **2** | `BaseNode` / `NodeField` / `NodeHandle` abstraction |
+| **3** | Five utility nodes (Delay, Math, Filter, API, Image) |
+| **4** | Text node variables, dynamic handles, edge sync |
+| **5** | Live validation, analytics panel, connection UX |
+| **6** | FastAPI DAG parse endpoint + frontend parity |
+| **7** | Execution preview simulation |
+| **8** | Themes, save/load, inspector, templates, shortcuts, README |
 
-- **BaseNode** abstraction: config-driven fields, handles, and layout
-- **9 node types**: Input, Text, LLM, Output, Delay, Math, Filter, API, Image
-- **Text node intelligence**: `{{variable}}` parsing → dynamic input handles
-- **Node inspector**: Figma-style property panel when a node is selected
+## Screenshots
 
-### Validation system
+Add captures under `docs/screenshots/` (see `docs/screenshots/README.md`):
 
-- Live frontend validation (cycles, isolated/disconnected nodes, invalid edges)
-- Connection rules (no self-loops, duplicates, pipeline semantics)
-- Visual feedback on nodes and edges
-
-### Backend DAG analysis
-
-- `POST /pipelines/parse` with `{ nodes, edges }`
-- Returns counts, DAG validity, cycle detection, connectivity metrics
-- Parity comparison in the analytics panel
-
-### Execution preview
-
-- Topological sort + timed visual simulation
-- Run / Pause / Resume / Step / Reset
-- Node activation and edge traversal styling (no real execution)
-
-### Workflow persistence
-
-- **Export** → `workflow.json` (nodes, edges, metadata, positions, data)
-- **Import** with structure validation
-- **Templates**: LLM pipeline, API flow, Math pipeline
-
-### UX polish
-
-- Light / dark theme (persisted in `localStorage`)
-- Keyboard shortcuts: Delete, Ctrl+S, Ctrl+A, F
-- Improved minimap, grid, and canvas theming
+| Placeholder | Description |
+|-------------|-------------|
+| `editor-dark.png` | Main editor — dark theme |
+| `editor-light.png` | Main editor — light theme |
+| `validation.png` | Analytics + invalid edge details |
+| `execution.png` | Execution preview in progress |
+| `inspector.png` | Node inspector panel |
 
 ## Setup
+
+### Prerequisites
+
+- Node.js 18+
+- Python 3.10+
 
 ### Frontend
 
@@ -126,50 +139,44 @@ npm start
 
 Open [http://localhost:3000](http://localhost:3000).
 
-Optional: `REACT_APP_API_URL=http://localhost:8000`
+Optional environment variable:
+
+```bash
+REACT_APP_API_URL=http://localhost:8000
+```
 
 ### Backend
 
 ```bash
 cd backend
 python -m venv .venv
-.\.venv\Scripts\activate   # Windows
+.\.venv\Scripts\activate    # Windows
+# source .venv/bin/activate  # macOS/Linux
 pip install -r requirements.txt
 uvicorn main:app --reload --port 8000
 ```
 
-API docs: [http://localhost:8000/docs](http://localhost:8000/docs)
+- API: [http://localhost:8000](http://localhost:8000)
+- Docs: [http://localhost:8000/docs](http://localhost:8000/docs)
 
-## Usage
+## Usage quick start
 
-1. Load a **template** from the sidebar or build a pipeline manually.
-2. Connect nodes; watch **live analytics** in the right panel.
+1. Pick a **template** from the sidebar or build from scratch.
+2. Connect nodes; watch **live analytics** update.
 3. Click **Analyze pipeline** to compare with backend results.
-4. Click **Run** in the execution section to preview traversal.
-5. **Export** workflow JSON (Ctrl+S) or **Import** a saved file.
-6. Select a node to open the **Node Inspector**.
+4. **Run** execution preview to see traversal animation.
+5. **Export** workflow (header or Ctrl+S) / **Import** JSON.
+6. Select a node to edit in the **Inspector**.
 7. Toggle **Light/Dark** in the header.
 
-## Screenshots
-
-Add captures under `docs/screenshots/` for your portfolio:
-
-| File | Description |
-|------|-------------|
-| `editor-dark.png` | Main editor (dark mode) |
-| `editor-light.png` | Main editor (light mode) |
-| `validation.png` | Invalid graph + analytics warnings |
-| `execution.png` | Execution preview in progress |
-| `inspector.png` | Node inspector panel |
-
-## API contract
+## API
 
 **POST** `/pipelines/parse`
 
 ```json
 {
   "nodes": [{ "id": "text-1", "type": "text" }],
-  "edges": [{ "id": "e1", "source": "a", "target": "b", "sourceHandle": "...", "targetHandle": "..." }]
+  "edges": [{ "id": "e1", "source": "a", "target": "b" }]
 }
 ```
 
@@ -186,13 +193,23 @@ Add captures under `docs/screenshots/` for your portfolio:
 }
 ```
 
-## Design principles
+## Design system
 
-- Zustand as the single source of truth for graph state
-- Graph logic centralized under `frontend/src/graph/`
-- Thin node wrappers; shared UI via BaseNode / NodeField / NodeHandle
-- Immutable store updates for ReactFlow stability
-- Backend validators mirror frontend semantics for parity
+All UI colors flow through semantic tokens in `frontend/src/styles/theme.css`:
+
+- `--bg-primary`, `--surface-primary`, `--text-primary`
+- `--accent-primary`, `--success`, `--warning`, `--error`
+- Component tokens for controls, edges, execution states, ReactFlow chrome
+
+Toggle theme via header; preference is stored in `localStorage` under `ai-pipeline-builder-theme`.
+
+## Future improvements
+
+- Real workflow execution engine (LLM/API calls, retries, caching)
+- Collaborative editing and presence
+- Workflow versioning and diffing
+- Typed port schemas and connection rules per data type
+- Cloud persistence (optional — out of scope for this demo)
 
 ## License
 
