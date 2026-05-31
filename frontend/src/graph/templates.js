@@ -169,4 +169,98 @@ export const WORKFLOW_TEMPLATES = [
       edge('e2', 'math-1', 'math-1-result', 'customOutput-1', 'customOutput-1-value'),
     ],
   },
+  {
+    id: 'invalid-cycle',
+    name: 'Invalid Workflow: Cycle',
+    description: 'Demonstrates cycle detection → Pipeline Invalid',
+    invalid: true,
+    nodes: [
+      {
+        id: 'customInput-1',
+        type: 'customInput',
+        position: { x: 120, y: 300 },
+        data: {
+          id: 'customInput-1',
+          nodeType: 'customInput',
+          inputName: 'input_1',
+          inputType: 'Text',
+        },
+      },
+      {
+        id: 'text-1',
+        type: 'text',
+        position: { x: 120, y: 80 },
+        data: {
+          id: 'text-1',
+          nodeType: 'text',
+          text: 'Process: {{data}}',
+          variables: ['data'],
+          variableHandleIds: ['var-data'],
+        },
+      },
+      {
+        id: 'llm-1',
+        type: 'llm',
+        position: { x: 480, y: 80 },
+        data: { id: 'llm-1', nodeType: 'llm' },
+      },
+      {
+        id: 'filter-1',
+        type: 'filter',
+        position: { x: 480, y: 300 },
+        data: {
+          id: 'filter-1',
+          nodeType: 'filter',
+          field: 'status',
+          operator: 'eq',
+          value: 'ok',
+        },
+      },
+    ],
+    edges: [
+      edge('e1', 'customInput-1', 'customInput-1-value', 'text-1', 'var-data'),
+      edge('e2', 'text-1', 'text-1-output', 'llm-1', 'llm-1-prompt'),
+      edge('e3', 'llm-1', 'llm-1-response', 'filter-1', 'filter-1-in'),
+      edge('e4', 'filter-1', 'filter-1-pass', 'customInput-1', 'customInput-1-value'),
+    ],
+  },
+  {
+    id: 'invalid-disconnected',
+    name: 'Invalid Workflow: Disconnected',
+    description: 'Demonstrates disconnected nodes → Pipeline Invalid',
+    invalid: true,
+    nodes: [
+      {
+        id: 'customInput-1',
+        type: 'customInput',
+        position: { x: 80, y: 120 },
+        data: {
+          id: 'customInput-1',
+          nodeType: 'customInput',
+          inputName: 'input_1',
+          inputType: 'Text',
+        },
+      },
+      {
+        id: 'llm-1',
+        type: 'llm',
+        position: { x: 400, y: 120 },
+        data: { id: 'llm-1', nodeType: 'llm' },
+      },
+      {
+        id: 'customOutput-1',
+        type: 'customOutput',
+        position: { x: 780, y: 340 },
+        data: {
+          id: 'customOutput-1',
+          nodeType: 'customOutput',
+          outputName: 'output_1',
+          outputType: 'Text',
+        },
+      },
+    ],
+    edges: [
+      edge('e1', 'customInput-1', 'customInput-1-value', 'llm-1', 'llm-1-prompt'),
+    ],
+  },
 ];

@@ -36,7 +36,7 @@ export function Sidebar() {
             <button
               key={t.id}
               type="button"
-              className="templateCard"
+              className={`templateCard${t.invalid ? ' templateCardInvalid' : ''}`}
               onClick={() => loadTemplate(t.id)}
             >
               <div className="templateName">{t.name}</div>

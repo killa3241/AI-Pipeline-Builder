@@ -9,7 +9,7 @@ import {
   } from 'reactflow';
 import { parseVariables } from './graph/variableParser';
 import { removeEdgesForMissingTargetHandles, variablesToHandleIds } from './graph/handleSync';
-import { analyzeGraph } from './graph/analytics';
+import { analyzeGraph, toFinalAnalysisReport } from './graph/analytics';
 import { parsePipeline } from './api/pipelineApi';
 import {
   INITIAL_EXECUTION,
@@ -249,9 +249,11 @@ export const useStore = create((set, get) => ({
       try {
         const backendAnalytics = await parsePipeline(nodes, edges);
         set({ backendAnalytics, isSubmitting: false });
-      } catch (err) {
+      } catch {
+        const frontendReport = toFinalAnalysisReport(analyzeGraph(nodes, edges));
         set({
-          backendError: err?.message || 'Failed to parse pipeline',
+          backendAnalytics: frontendReport,
+          backendError: null,
           isSubmitting: false,
         });
       }

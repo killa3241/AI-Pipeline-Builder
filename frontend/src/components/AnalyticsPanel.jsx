@@ -21,12 +21,71 @@ function MetricRow({ label, value, pill }) {
   );
 }
 
+function AnalysisStatusBadge({ valid }) {
+  return (
+    <div
+      className={`analysisStatusBadge ${valid ? 'analysisStatusBadgeValid' : 'analysisStatusBadgeInvalid'}`}
+      role="status"
+      aria-label={valid ? 'Pipeline valid' : 'Pipeline invalid'}
+    >
+      {valid ? 'Valid' : 'Invalid'}
+    </div>
+  );
+}
+
+function formatIssuesFound(data) {
+  const issues = [];
+
+  if (data.cycleDetected) {
+    issues.push('Cycle detected in workflow.');
+  }
+  if ((data.isolatedNodes ?? 0) > 0) {
+    const count = data.isolatedNodes;
+    issues.push(
+      `${count} isolated node${count === 1 ? '' : 's'} detected`
+    );
+  }
+  if ((data.disconnectedNodes ?? 0) > 0) {
+    const count = data.disconnectedNodes;
+    issues.push(
+      `${count} disconnected component${count === 1 ? '' : 's'} detected`
+    );
+  }
+
+  return issues;
+}
+
+function AnalysisSourceBanner({ source }) {
+  if (source === 'backend') {
+    return (
+      <div className="analysisSourceBanner analysisSourceBannerVerified">
+        ✓ Backend Verified
+      </div>
+    );
+  }
+
+  if (source === 'frontend') {
+    return (
+      <div className="analysisSourceBanner analysisSourceBannerFallback">
+        <div className="analysisSourceBannerTitle">⚠ Backend Unavailable</div>
+        <div className="analysisSourceBannerHint">
+          Showing local workflow analysis.
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+}
+
 function FinalAnalysisBlock({ data, isLoading, error }) {
   if (isLoading) {
     return (
       <div className="analyticsSection">
         <div className="analyticsSectionTitle">Final Analysis</div>
-        <div className="analyticsHint">Analyzing pipeline...</div>
+        <div className="analysisEmptyState analysisLoadingState">
+          <div className="analyticsHint">Analyzing pipeline...</div>
+        </div>
       </div>
     );
   }
@@ -35,9 +94,10 @@ function FinalAnalysisBlock({ data, isLoading, error }) {
     return (
       <div className="analyticsSection">
         <div className="analyticsSectionTitle">Final Analysis</div>
+        <AnalysisStatusBadge valid={false} />
         <div className="analyticsError">
-          <div style={{ marginBottom: '8px' }}>✗ Analysis Failed</div>
-          <div style={{ fontSize: '12px', marginTop: '4px' }}>{error}</div>
+          <div className="analyticsErrorTitle">Analysis Failed</div>
+          <div className="analyticsErrorMessage">{error}</div>
         </div>
       </div>
     );
@@ -47,34 +107,58 @@ function FinalAnalysisBlock({ data, isLoading, error }) {
     return (
       <div className="analyticsSection">
         <div className="analyticsSectionTitle">Final Analysis</div>
-        <div className="analyticsHint">No analysis available.</div>
-        <div className="analyticsHint" style={{ marginTop: '8px', fontSize: '11px' }}>
-          Click Analyze Pipeline to generate workflow insights.
+        <div className="analysisEmptyState">
+          <div className="analyticsHint">No analysis available.</div>
+          <div className="analysisEmptyHint">
+            Click Analyze Pipeline to inspect workflow structure.
+          </div>
         </div>
       </div>
     );
   }
 
+  const pipelineValid = data.pipelineValid ?? false;
+  const issues = formatIssuesFound(data);
+
   return (
-    <div className="analyticsSection">
+    <div className="analyticsSection analyticsFinalSection">
       <div className="analyticsSectionTitle">Final Analysis</div>
-      <div style={{ marginBottom: '12px', color: 'var(--status-success)', fontWeight: 600 }}>
-        ✓ Pipeline Valid
+
+      <div className="analysisReportHero">
+        <AnalysisStatusBadge valid={pipelineValid} />
       </div>
-      <MetricRow label="Nodes" value={data.numNodes ?? 0} />
-      <MetricRow label="Edges" value={data.numEdges ?? 0} />
-      <MetricRow
-        label="DAG"
-        value={data.isDag ? 'Valid' : 'Invalid'}
-        pill={data.isDag}
-      />
-      <MetricRow
-        label="Cycle Detected"
-        value={data.cycleDetected ? 'Yes' : 'No'}
-        pill={!data.cycleDetected}
-      />
-      <MetricRow label="Isolated Nodes" value={data.isolatedNodes ?? 0} />
-      <MetricRow label="Disconnected Nodes" value={data.disconnectedNodes ?? 0} />
+
+      <AnalysisSourceBanner source={data.source} />
+
+      <div className="analyticsIssuesBlock">
+        <div className="analyticsWarningsTitle">Issues Found</div>
+        {issues.length > 0 ? (
+          <ul className="analyticsIssuesList">
+            {issues.map((message) => (
+              <li key={message}>{message}</li>
+            ))}
+          </ul>
+        ) : (
+          <div className="analyticsIssuesClear">No issues detected.</div>
+        )}
+      </div>
+
+      <div className="analysisMetricsBlock">
+        <MetricRow label="Nodes" value={data.numNodes ?? 0} />
+        <MetricRow label="Edges" value={data.numEdges ?? 0} />
+        <MetricRow
+          label="DAG"
+          value={data.isDag ? 'Valid' : 'Invalid'}
+          pill={data.isDag}
+        />
+        <MetricRow
+          label="Cycle Detected"
+          value={data.cycleDetected ? 'Yes' : 'No'}
+          pill={!data.cycleDetected}
+        />
+        <MetricRow label="Isolated Nodes" value={data.isolatedNodes ?? 0} />
+        <MetricRow label="Disconnected Nodes" value={data.disconnectedNodes ?? 0} />
+      </div>
     </div>
   );
 }
@@ -189,8 +273,8 @@ export function AnalyticsPanel() {
 
       <div className="analyticsDivider" />
 
-      <FinalAnalysisBlock 
-        data={backendAnalytics} 
+      <FinalAnalysisBlock
+        data={backendAnalytics}
         isLoading={isSubmitting}
         error={backendError}
       />

@@ -122,3 +122,36 @@ export function analyzeGraph(nodes, edges) {
   };
 }
 
+/**
+ * Map live frontend analytics to the Final Analysis report shape (backend parity).
+ */
+export function toFinalAnalysisReport(analytics) {
+  const validationErrors = [];
+  if (analytics.cycleDetected) {
+    validationErrors.push('Cycle detected.');
+  }
+  if (analytics.isolatedNodes > 0) {
+    validationErrors.push('Workflow contains isolated nodes.');
+  }
+  if (analytics.disconnectedNodes > 0) {
+    validationErrors.push('Workflow contains disconnected components.');
+  }
+
+  const pipelineValid =
+    !analytics.cycleDetected &&
+    analytics.isolatedNodes === 0 &&
+    analytics.disconnectedNodes === 0;
+
+  return {
+    numNodes: analytics.numNodes,
+    numEdges: analytics.numEdges,
+    isDag: analytics.isDag,
+    cycleDetected: analytics.cycleDetected,
+    isolatedNodes: analytics.isolatedNodes,
+    disconnectedNodes: analytics.disconnectedNodes,
+    pipelineValid,
+    validationErrors,
+    source: 'frontend',
+  };
+}
+

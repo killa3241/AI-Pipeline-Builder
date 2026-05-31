@@ -24,6 +24,9 @@ function mapParseResponse(data) {
     cycleDetected: data.cycle_detected,
     isolatedNodes: data.isolated_nodes,
     disconnectedNodes: data.disconnected_nodes,
+    pipelineValid: data.pipeline_valid,
+    validationErrors: data.validation_errors ?? [],
+    source: 'backend',
   };
 }
 

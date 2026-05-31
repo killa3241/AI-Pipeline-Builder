@@ -31,3 +31,5 @@ class PipelineParseResponse(BaseModel):
     cycle_detected: bool
     isolated_nodes: int
     disconnected_nodes: int
+    pipeline_valid: bool
+    validation_errors: list[str] = Field(default_factory=list)

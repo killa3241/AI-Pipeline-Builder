@@ -84,8 +84,8 @@
   --canvas-glow-2: color-mix(in srgb, var(--success) 10%, transparent);
   --canvas-overlay: color-mix(in srgb, var(--text-primary) 2%, transparent);
 
-  --edge-default: color-mix(in srgb, var(--text-secondary) 55%, transparent);
-  --edge-hover: color-mix(in srgb, var(--text-secondary) 85%, transparent);
+  --edge-default: color-mix(in srgb, var(--text-secondary) 68%, transparent);
+  --edge-hover: color-mix(in srgb, var(--text-secondary) 92%, transparent);
   --edge-shadow: color-mix(in srgb, black 28%, transparent);
   --edge-exec: color-mix(in srgb, var(--accent-primary) 95%, transparent);
   --edge-exec-glow: color-mix(in srgb, var(--accent-primary) 45%, transparent);
@@ -123,7 +123,10 @@
   --brand-highlight: color-mix(in srgb, var(--text-primary) 35%, transparent);
 
   --scrollbar-thumb: color-mix(in srgb, var(--text-muted) 55%, transparent);
-  --scrollbar-track: transparent;
+  --scrollbar-thumb-hover: color-mix(in srgb, var(--text-muted) 75%, transparent);
+  --scrollbar-track: color-mix(in srgb, var(--text-primary) 4%, transparent);
+
+  --placeholder-color: color-mix(in srgb, var(--text-muted) 88%, transparent);
 
   --select-option-bg: var(--surface-secondary);
   --select-option-text: var(--text-primary);
@@ -141,11 +144,13 @@
   --state-invalid-border: color-mix(in srgb, var(--warning) 58%, transparent);
   --state-invalid-ring: color-mix(in srgb, var(--warning) 16%, transparent);
 
-  --handle-border: color-mix(in srgb, var(--text-primary) 28%, transparent);
-  --handle-bg: color-mix(in srgb, var(--text-primary) 14%, transparent);
+  --handle-border: color-mix(in srgb, var(--text-primary) 42%, transparent);
+  --handle-bg: color-mix(in srgb, var(--text-primary) 22%, transparent);
   --handle-shadow: color-mix(in srgb, black 28%, transparent);
-  --handle-hover-border: color-mix(in srgb, var(--text-primary) 42%, transparent);
-  --handle-hover-bg: color-mix(in srgb, var(--text-primary) 20%, transparent);
+  --handle-hover-border: color-mix(in srgb, var(--accent-primary) 72%, transparent);
+  --handle-hover-bg: color-mix(in srgb, var(--accent-primary) 20%, transparent);
+  --handle-connect-border: color-mix(in srgb, var(--accent-primary) 85%, transparent);
+  --handle-connect-bg: color-mix(in srgb, var(--accent-primary) 28%, transparent);
 
   /* Node layout */
   --node-width: 240px;
@@ -167,6 +172,7 @@
   --border-1: var(--border-primary);
   --border-2: var(--border-strong);
   --focus: var(--control-focus-ring);
+  --disabled-opacity: 0.62;
 }
 
 [data-theme='light'] {
@@ -179,27 +185,63 @@
   --surface-elevated: #eef2f7;
 
   --text-primary: #0f172a;
-  --text-secondary: #334155;
-  --text-muted: #64748b;
+  --text-secondary: #1e293b;
+  --text-muted: #475569;
 
-  --border-color: #cbd5e1;
-  --border-strong: 1px solid #94a3b8;
+  --border-color: #b8c5d4;
+  --border-strong: 1px solid #8fa0b3;
 
   --accent-primary: #5b4fe8;
   --success: #16a34a;
   --warning: #d97706;
   --error: #dc2626;
 
+  --control-bg: #f1f5f9;
+  --control-border: #b8c5d4;
+  --control-bg-hover: #e8edf3;
+
+  --card-border: #b8c5d4;
+  --card-border-hover: #8fa0b3;
+  --card-bg: linear-gradient(
+    180deg,
+    #ffffff,
+    color-mix(in srgb, #f8fafc 88%, #ffffff)
+  );
+  --card-bg-hover: linear-gradient(
+    180deg,
+    #ffffff,
+    color-mix(in srgb, #eef2f7 92%, #ffffff)
+  );
+
   --shadow-sm: 0 1px 0 color-mix(in srgb, #0f172a 6%, transparent),
     0 8px 24px color-mix(in srgb, #0f172a 8%, transparent);
   --shadow-md: 0 1px 0 color-mix(in srgb, #0f172a 8%, transparent),
     0 16px 48px color-mix(in srgb, #0f172a 10%, transparent);
-  --shadow-node: 0 10px 28px color-mix(in srgb, #0f172a 12%, transparent);
+  --shadow-node: 0 10px 28px color-mix(in srgb, #0f172a 14%, transparent);
 
-  --grid: color-mix(in srgb, #0f172a 10%, transparent);
+  --grid: color-mix(in srgb, #0f172a 12%, transparent);
   --minimap-node: #64748b;
   --minimap-mask: color-mix(in srgb, var(--bg-primary) 88%, transparent);
 
-  --edge-shadow: color-mix(in srgb, #0f172a 12%, transparent);
+  --edge-default: color-mix(in srgb, #475569 72%, transparent);
+  --edge-hover: color-mix(in srgb, #1e293b 85%, transparent);
+  --edge-shadow: color-mix(in srgb, #0f172a 14%, transparent);
   --rf-controls-bg: color-mix(in srgb, var(--surface-primary) 94%, transparent);
+
+  --scrollbar-thumb: color-mix(in srgb, #64748b 70%, transparent);
+  --scrollbar-thumb-hover: color-mix(in srgb, #475569 85%, transparent);
+  --scrollbar-track: color-mix(in srgb, #0f172a 4%, transparent);
+
+  --placeholder-color: #64748b;
+
+  --handle-border: color-mix(in srgb, #475569 78%, transparent);
+  --handle-bg: #ffffff;
+  --handle-shadow: color-mix(in srgb, #0f172a 18%, transparent);
+  --handle-hover-border: color-mix(in srgb, var(--accent-primary) 78%, transparent);
+  --handle-hover-bg: color-mix(in srgb, var(--accent-primary) 12%, #ffffff);
+  --handle-connect-border: color-mix(in srgb, var(--accent-primary) 82%, transparent);
+  --handle-connect-bg: color-mix(in srgb, var(--accent-primary) 14%, #ffffff);
+
+  --node-frame-bg: #ffffff;
+  --disabled-opacity: 0.68;
 }

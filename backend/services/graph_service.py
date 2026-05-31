@@ -50,6 +50,27 @@ def _validate_graph_structure(
     return errors
 
 
+def _build_pipeline_validation(
+    cycle_detected: bool,
+    isolated_ids: list[str],
+    disconnected_ids: list[str],
+) -> tuple[bool, list[str]]:
+    validation_errors: list[str] = []
+    if cycle_detected:
+        validation_errors.append("Cycle detected.")
+    if isolated_ids:
+        validation_errors.append("Workflow contains isolated nodes.")
+    if disconnected_ids:
+        validation_errors.append("Workflow contains disconnected components.")
+
+    pipeline_valid = (
+        not cycle_detected
+        and len(isolated_ids) == 0
+        and len(disconnected_ids) == 0
+    )
+    return pipeline_valid, validation_errors
+
+
 def analyze_pipeline(
     nodes: list[PipelineNode], edges: list[PipelineEdge]
 ) -> PipelineParseResponse:
@@ -70,6 +91,9 @@ def analyze_pipeline(
     is_dag = not cycle_detected
 
     isolated_ids, disconnected_ids = compute_connectivity(node_ids, edge_dicts)
+    pipeline_valid, validation_errors = _build_pipeline_validation(
+        cycle_detected, isolated_ids, disconnected_ids
+    )
 
     return PipelineParseResponse(
         num_nodes=num_nodes,
@@ -78,4 +102,6 @@ def analyze_pipeline(
         cycle_detected=cycle_detected,
         isolated_nodes=len(isolated_ids),
         disconnected_nodes=len(disconnected_ids),
+        pipeline_valid=pipeline_valid,
+        validation_errors=validation_errors,
     )
